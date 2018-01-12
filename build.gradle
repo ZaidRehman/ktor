@@ -133,7 +133,7 @@ allprojects {
     }
 
     repositories {
-//        mavenLocal()
+        mavenLocal()
         jcenter()
 
         if (kotlin_version.contains("-eap") || kotlin_version.contains("-rc")) {
