@@ -2,16 +2,24 @@ package io.ktor.network.sockets
 
 import io.ktor.network.selector.*
 import io.ktor.network.util.*
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.io.*
 import kotlinx.coroutines.experimental.io.ByteChannel
 import kotlinx.io.pool.*
 import java.io.*
 import java.nio.channels.*
 
-internal fun attachForWritingImpl(channel: ByteChannel, nioChannel: WritableByteChannel, selectable: Selectable, selector: SelectorManager, pool: ObjectPool<ByteBuffer>): ReaderJob {
+internal fun attachForWritingImpl(
+        channel: ByteChannel,
+        nioChannel: WritableByteChannel,
+        selectable: Selectable,
+        selector: SelectorManager,
+        pool: ObjectPool<ByteBuffer>,
+        parent: Job
+): ReaderJob {
     val buffer = pool.borrow()
 
-    return reader(ioCoroutineDispatcher, channel) {
+    return reader(ioCoroutineDispatcher, channel, parent) {
         try {
             while (true) {
                 buffer.clear()
@@ -42,8 +50,14 @@ internal fun attachForWritingImpl(channel: ByteChannel, nioChannel: WritableByte
     }
 }
 
-internal fun attachForWritingDirectImpl(channel: ByteChannel, nioChannel: WritableByteChannel, selectable: Selectable, selector: SelectorManager): ReaderJob {
-    return reader(ioCoroutineDispatcher, channel) {
+internal fun attachForWritingDirectImpl(
+        channel: ByteChannel,
+        nioChannel: WritableByteChannel,
+        selectable: Selectable,
+        selector: SelectorManager,
+        parent: Job
+): ReaderJob {
+    return reader(ioCoroutineDispatcher, channel, parent) {
         try {
             var rc: Int
             val readBlock = { buffer: ByteBuffer ->
