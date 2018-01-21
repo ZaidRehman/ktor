@@ -30,7 +30,7 @@ abstract class MultithreadedTest(private val factory: HttpClientEngineFactory<*>
         }
     }
 
-    @Test
+    @Test @Ignore
     fun numberTest() = runBlocking {
         val client = HttpClient(factory)
         val pool = Executors.newFixedThreadPool(MAX_ACTIVE_TASKS)
