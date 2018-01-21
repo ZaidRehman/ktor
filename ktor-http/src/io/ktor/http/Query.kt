@@ -2,15 +2,15 @@ package io.ktor.http
 
 import io.ktor.util.*
 
-fun parseQueryString(query: CharSequence, startIndex: Int = 0, limit: Int = 1000): StringValues {
+fun parseQueryString(query: CharSequence, startIndex: Int = 0, limit: Int = 1000): Parameters {
     return if (startIndex > query.lastIndex) {
-        StringValues.Empty
+        Parameters.Empty
     } else {
-        StringValues.build { parse(query, startIndex, limit) }
+        Parameters.build { parse(query, startIndex, limit) }
     }
 }
 
-private fun StringValuesBuilder.parse(query: CharSequence, startIndex: Int, limit: Int) {
+private fun ParametersBuilder.parse(query: CharSequence, startIndex: Int, limit: Int) {
     var count = 0
     var nameIndex = startIndex
     var equalIndex = -1
